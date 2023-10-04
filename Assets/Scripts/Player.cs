@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
     private BoxCollider2D _collider;
+    private SpriteRenderer _spriteRenderer;
     private Vector2 _moveInput;
 
     void Awake()
@@ -32,6 +33,10 @@ public class Player : MonoBehaviour
             Debug.Log("Player's Rigidbody2D is null");
         if (!TryGetComponent(out _collider))
             Debug.Log("Player's BoxCollider2D is null");
+        if (!GetComponentInChildren<SpriteRenderer>())
+            Debug.Log("Player's SpriteRenderer is null");
+        else
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
@@ -74,6 +79,7 @@ public class Player : MonoBehaviour
         // Update the horizontal (x-axis) velocity of the Rigidbody2D.
         // The vertical (y-axis) velocity remains unchanged to preserve any existing vertical motion like gravity or jumping.
         _rigidBody2D.velocity = new Vector2(_moveInput.x * _speed, _rigidBody2D.velocity.y);
+        Flip();
     }
 
     private void Jump()
@@ -93,6 +99,14 @@ public class Player : MonoBehaviour
         // Reset the cayote time counter
         if (_remainingJumps == 0)
             _cayoteTimeCounter = 0f;
+    }
+
+    private void Flip()
+    {
+        if (_moveInput.x > 0)
+            _spriteRenderer.flipX = false;
+        else if (_moveInput.x < 0)
+            _spriteRenderer.flipX = true;
     }
 
     private void Gravity()
