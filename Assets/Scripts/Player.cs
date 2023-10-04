@@ -37,7 +37,6 @@ public class Player : MonoBehaviour
     void Update()
     {
         UpdateJumpCounters();
-        Gravity();
         if (_jumpBufferTimeCounter > 0 && (_remainingJumps > 0 || (_cayoteTimeCounter > 0 && IsGrounded())))
         {
             Jump();
@@ -47,6 +46,7 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         Movement();
+        Gravity();
     }
 
     public void OnMove(InputAction.CallbackContext context)
