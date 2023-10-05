@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,12 +23,15 @@ public class Player : MonoBehaviour
 
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
+    private PlayerAnimation _playerAnimation;
     private Vector2 _moveInput;
 
     void Awake()
     {
         if (!TryGetComponent(out _rigidBody2D))
             Debug.Log("Player's Rigidbody2D is null");
+        if (!TryGetComponent(out _playerAnimation))
+            Debug.Log("Player's PlayerAnimation is null");
     }
 
     void Update()
@@ -51,6 +53,7 @@ public class Player : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         _moveInput = context.ReadValue<Vector2>();
+        _playerAnimation.Run(_moveInput.x);
     }
 
     public void OnJump(InputAction.CallbackContext context)
