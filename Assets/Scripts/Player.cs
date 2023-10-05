@@ -7,40 +7,34 @@ public class Player : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _jumpForce = 10f;
+    private bool _isFacingRight;
 
     [Header("Jump Settings")]
     [SerializeField] private float _cayoteTime = 0.2f;
-    private float _cayoteTimeCounter;
+    [SerializeField] private float _cayoteTimeCounter;
     [SerializeField] private float _jumpBufferTime = 0.2f;
-    private float _jumpBufferTimeCounter;
+    [SerializeField] private float _jumpBufferTimeCounter;
     [SerializeField] private int _remainingJumps = 1;
+    [SerializeField] private GameObject _groundCheck;
 
     [Header("Gravity Settings")]
     [SerializeField] private float _gravityScale = 2f;
     [SerializeField] private float _maxFallSpeed = 16f;
     [SerializeField] private float _fallMultiplier = 2f;
 
-
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
-    private BoxCollider2D _collider;
-    private SpriteRenderer _spriteRenderer;
     private Vector2 _moveInput;
 
     void Awake()
     {
         if (!TryGetComponent(out _rigidBody2D))
             Debug.Log("Player's Rigidbody2D is null");
-        if (!TryGetComponent(out _collider))
-            Debug.Log("Player's BoxCollider2D is null");
-        if (!GetComponentInChildren<SpriteRenderer>())
-            Debug.Log("Player's SpriteRenderer is null");
-        else
-            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
     {
+        Flip();
         UpdateJumpCounters();
         if (_jumpBufferTimeCounter > 0 && (_remainingJumps > 0 || (_cayoteTimeCounter > 0 && IsGrounded())))
         {
@@ -79,7 +73,6 @@ public class Player : MonoBehaviour
         // Update the horizontal (x-axis) velocity of the Rigidbody2D.
         // The vertical (y-axis) velocity remains unchanged to preserve any existing vertical motion like gravity or jumping.
         _rigidBody2D.velocity = new Vector2(_moveInput.x * _speed, _rigidBody2D.velocity.y);
-        Flip();
     }
 
     private void Jump()
@@ -103,10 +96,16 @@ public class Player : MonoBehaviour
 
     private void Flip()
     {
-        if (_moveInput.x > 0)
-            _spriteRenderer.flipX = false;
-        else if (_moveInput.x < 0)
-            _spriteRenderer.flipX = true;
+        if (_moveInput.x < 0 && !_isFacingRight)
+        {
+            transform.Rotate(0f, 180f, 0f);
+            _isFacingRight = !_isFacingRight;
+        }
+        else if (_moveInput.x > 0 && _isFacingRight)
+        {
+            transform.Rotate(0f, 180f, 0f);
+            _isFacingRight = !_isFacingRight;
+        }
     }
 
     private void Gravity()
@@ -138,8 +137,13 @@ public class Player : MonoBehaviour
 
     private bool IsGrounded()
     {
-        float extraHeight = 0.1f;
-        RaycastHit2D raycastHit = Physics2D.BoxCast(_collider.bounds.center, _collider.bounds.size, 0f, Vector2.down, extraHeight, 1 << 8);
-        return raycastHit.collider != null;
+        return Physics2D.OverlapCircle(_groundCheck.transform.position, 0.27f, 1 << 8);
+    }
+
+    // Debugging
+    private void OnDrawGizmos()
+    {
+        // Draw a circle at the ground check position to visualize the ground check radius
+        Gizmos.DrawWireSphere(_groundCheck.transform.position, 0.27f);
     }
 }
