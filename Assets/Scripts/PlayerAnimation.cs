@@ -33,4 +33,9 @@ public class PlayerAnimation : MonoBehaviour
     {
         _animator.SetBool("Falling", falling);
     }
+
+    public void GroundAttackAnimation()
+    {
+        _animator.SetTrigger("GroundAttack");
+    }
 }

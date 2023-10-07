@@ -78,6 +78,12 @@ public class Player : MonoBehaviour
             _cayoteTimeCounter = 0f;
     }
 
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed && _isGrounded)
+            _playerAnimation.GroundAttackAnimation();
+    }
+
     private void Movement()
     {
         _rigidBody2D.velocity = new Vector2(_horizontalMoveInput * _speed, _rigidBody2D.velocity.y);
