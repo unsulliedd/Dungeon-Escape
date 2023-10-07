@@ -12,7 +12,7 @@ public class PlayerAnimation : MonoBehaviour
             _animator = GetComponentInChildren<Animator>();
     }
 
-    public void Run(float _moveInput)
+    public void RunAnimation(float _moveInput)
     {
         if (_moveInput == 0)
         {
@@ -22,5 +22,10 @@ public class PlayerAnimation : MonoBehaviour
         {
             _animator.SetFloat("Move", Mathf.Abs(_moveInput));
         }
+    }
+
+    public void JumpAnimation(bool jumping)
+    {
+        _animator.SetBool("Jumping", jumping);
     }
 }
