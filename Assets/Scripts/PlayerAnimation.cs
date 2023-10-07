@@ -28,4 +28,9 @@ public class PlayerAnimation : MonoBehaviour
     {
         _animator.SetBool("Jumping", jumping);
     }
+
+    public void FallAnimation(bool falling)
+    {
+        _animator.SetBool("Falling", falling);
+    }
 }
