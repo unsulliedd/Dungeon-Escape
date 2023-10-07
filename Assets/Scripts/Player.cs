@@ -4,17 +4,21 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float _speed = 5f;
-    [SerializeField] private float _jumpForce = 10f;
+    [SerializeField] private float _speed = 7f;
+    [SerializeField] private float _jumpForce = 16f;    
+    private float _horizontalMoveInput;
     private bool _isFacingRight;
 
     [Header("Jump Settings")]
-    [SerializeField] private float _cayoteTime = 0.2f;
+    [SerializeField] private float _cayoteTime = 0.1f;
     [SerializeField] private float _cayoteTimeCounter;
-    [SerializeField] private float _jumpBufferTime = 0.2f;
+    [SerializeField] private float _jumpBufferTime = 0.1f;
     [SerializeField] private float _jumpBufferTimeCounter;
-    [SerializeField] private int _remainingJumps = 1;
+    [SerializeField] private bool _canSecondJump;
+    [SerializeField] private bool _isGrounded;
+    [SerializeField] private float _groundCheckRadius = 0.27f;
     [SerializeField] private GameObject _groundCheck;
+    [SerializeField] private LayerMask _groundLayerMask;
 
     [Header("Gravity Settings")]
     [SerializeField] private float _gravityScale = 2f;
@@ -24,7 +28,6 @@ public class Player : MonoBehaviour
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
     private PlayerAnimation _playerAnimation;
-    private Vector2 _moveInput;
 
     void Awake()
     {
@@ -36,12 +39,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        _isGrounded = IsGrounded();
+
         Flip();
         UpdateJumpCounters();
-        if (_jumpBufferTimeCounter > 0 && (_remainingJumps > 0 || (_cayoteTimeCounter > 0 && IsGrounded())))
-        {
-            Jump();
-        }
     }
 
     private void FixedUpdate()
@@ -52,101 +53,91 @@ public class Player : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        _moveInput = context.ReadValue<Vector2>();
-        _playerAnimation.Run(_moveInput.x);
+        _horizontalMoveInput = context.ReadValue<Vector2>().x;
+        _playerAnimation.RunAnimation(_horizontalMoveInput);
     }
 
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.started)
             _jumpBufferTimeCounter = _jumpBufferTime;
-
-        if (context.canceled)
-            _jumpBufferTimeCounter = 0f;
-
-        if (_jumpBufferTimeCounter > 0 && (_remainingJumps > 0 || (_cayoteTimeCounter > 0 && IsGrounded())))
+        else if (context.performed)
         {
-            Jump();
-            _jumpBufferTimeCounter = 0f;
+            if (_cayoteTimeCounter > 0f && _jumpBufferTimeCounter > 0f)
+            {                
+                _canSecondJump = true;
+                HandleJump();
+            }
+            else if (_canSecondJump && _rigidBody2D.velocity.y > -2.5f)
+            {
+                _canSecondJump = false;
+                HandleJump();
+            }
         }
+        else if (context.canceled)
+            _cayoteTimeCounter = 0f;
     }
 
     private void Movement()
     {
-        // Update the horizontal (x-axis) velocity of the Rigidbody2D.
-        // The vertical (y-axis) velocity remains unchanged to preserve any existing vertical motion like gravity or jumping.
-        _rigidBody2D.velocity = new Vector2(_moveInput.x * _speed, _rigidBody2D.velocity.y);
-    }
-
-    private void Jump()
-    {
-        // Reset the vertical velocity before applying the jump force to ensure consistent jump heights
-        _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, 0f);
-
-        // Apply the jump force
-        _rigidBody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-
-        // Decrement the remaining jumps
-        _remainingJumps--;
-
-        // Reset the jump buffer counter
-        _jumpBufferTimeCounter = 0f;
-
-        // Reset the cayote time counter
-        if (_remainingJumps == 0)
-            _cayoteTimeCounter = 0f;
+        _rigidBody2D.velocity = new Vector2(_horizontalMoveInput * _speed, _rigidBody2D.velocity.y);
     }
 
     private void Flip()
     {
-        if (_moveInput.x < 0 && !_isFacingRight)
+        if (_horizontalMoveInput < 0 && !_isFacingRight)
         {
             transform.Rotate(0f, 180f, 0f);
             _isFacingRight = !_isFacingRight;
         }
-        else if (_moveInput.x > 0 && _isFacingRight)
+        else if (_horizontalMoveInput > 0 && _isFacingRight)
         {
             transform.Rotate(0f, 180f, 0f);
             _isFacingRight = !_isFacingRight;
         }
     }
 
-    private void Gravity()
+    private void HandleJump()
     {
-        if (_rigidBody2D.velocity.y < 0)
-        {
-            _rigidBody2D.gravityScale = _gravityScale * _fallMultiplier;            
-            _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, Mathf.Max(_rigidBody2D.velocity.y, -_maxFallSpeed));
-        }
-        else
-        {
-               _rigidBody2D.gravityScale = _gravityScale;
-        }
+        _playerAnimation.JumpAnimation(true);
+
+        _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, 0f);
+        _rigidBody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+
+        _jumpBufferTimeCounter = 0f;
     }
 
     private void UpdateJumpCounters()
     {
-        if (IsGrounded())
+        if (_isGrounded && _rigidBody2D.velocity.y < 0)
+            _playerAnimation.JumpAnimation(false);
+
+        if (_isGrounded)
         {
             _cayoteTimeCounter = _cayoteTime;
-            _remainingJumps = 1;
+            _playerAnimation.FallAnimation(false);
         }
         else
-        {
             _cayoteTimeCounter -= Time.deltaTime;
-        }
+
         _jumpBufferTimeCounter -= Time.deltaTime;
+    }
+
+    private void Gravity()
+    {
+        if (_rigidBody2D.velocity.y < -1 && (_cayoteTimeCounter < 0f || _jumpBufferTimeCounter < 0f))
+        {
+            _playerAnimation.FallAnimation(true);
+
+            _rigidBody2D.gravityScale = _gravityScale * _fallMultiplier;            
+            _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, Mathf.Max(_rigidBody2D.velocity.y, -_maxFallSpeed));
+        }
+        else
+            _rigidBody2D.gravityScale = _gravityScale;
     }
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(_groundCheck.transform.position, 0.27f, 1 << 8);
-    }
-
-    // Debugging
-    private void OnDrawGizmos()
-    {
-        // Draw a circle at the ground check position to visualize the ground check radius
-        Gizmos.DrawWireSphere(_groundCheck.transform.position, 0.27f);
+        return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckRadius, _groundLayerMask);
     }
 }
