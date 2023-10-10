@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,6 +25,9 @@ public class Player : MonoBehaviour
     [SerializeField] private float _gravityScale = 2f;
     [SerializeField] private float _maxFallSpeed = 16f;
     [SerializeField] private float _fallMultiplier = 2f;
+
+    [Header("Attack Settings")]
+    [SerializeField] private bool _groundAttack;
 
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
@@ -63,12 +67,12 @@ public class Player : MonoBehaviour
             _jumpBufferTimeCounter = _jumpBufferTime;
         else if (context.performed)
         {
-            if (_cayoteTimeCounter > 0f && _jumpBufferTimeCounter > 0f)
+            if (_cayoteTimeCounter > 0f && _jumpBufferTimeCounter > 0f && !_groundAttack)
             {                
                 _canSecondJump = true;
                 HandleJump();
             }
-            else if (_canSecondJump && _rigidBody2D.velocity.y > -2.5f)
+            else if (_canSecondJump && _rigidBody2D.velocity.y > 0f && !_groundAttack)
             {
                 _canSecondJump = false;
                 HandleJump();
@@ -81,7 +85,16 @@ public class Player : MonoBehaviour
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (context.performed && _isGrounded)
+        {
+            _groundAttack = true;
             _playerAnimation.GroundAttackAnimation();
+            StartCoroutine(GroundAttackRoutine());
+        }
+    }
+    IEnumerator GroundAttackRoutine()
+    {
+        yield return new WaitForSeconds(1f);
+        _groundAttack = false;
     }
 
     private void Movement()
