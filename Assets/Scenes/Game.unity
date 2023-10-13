@@ -440,7 +440,7 @@ GameObject:
   - component: {fileID: 281612215}
   - component: {fileID: 281612217}
   - component: {fileID: 281612218}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12815,7 +12815,7 @@ GameObject:
   - component: {fileID: 1003802074}
   - component: {fileID: 1003802075}
   - component: {fileID: 1003802076}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Hit_Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13121,7 +13121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1587038409}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14214,7 +14214,7 @@ GameObject:
   - component: {fileID: 1925357191}
   - component: {fileID: 1925357190}
   - component: {fileID: 1925357192}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
