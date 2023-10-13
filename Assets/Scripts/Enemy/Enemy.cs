@@ -14,6 +14,7 @@ public abstract class Enemy : MonoBehaviour
 
     [Header("Enemy Animation")]
     protected bool idleInitialState = true;
+    protected bool isHit = false;
 
     [Header("Enemy References")]
     protected Animator animator;
@@ -52,7 +53,9 @@ public abstract class Enemy : MonoBehaviour
             idleInitialState = false;
             animator.SetTrigger("Idle");
         }
-        transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
+
+        if (!isHit)
+            transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
     }
 
     public virtual void Flip()
