@@ -12643,8 +12643,8 @@ MonoBehaviour:
   health: 0
   speed: 2
   gems: 0
-  _waypointA: {fileID: 1430451117}
-  _waypointB: {fileID: 1534602538}
+  waypointA: {fileID: 1430451117}
+  waypointB: {fileID: 1534602538}
 --- !u!1 &1430451116
 GameObject:
   m_ObjectHideFlags: 0
