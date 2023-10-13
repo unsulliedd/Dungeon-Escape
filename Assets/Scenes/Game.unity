@@ -12534,7 +12534,7 @@ GameObject:
   - component: {fileID: 1162288563}
   - component: {fileID: 1162288562}
   m_Layer: 0
-  m_Name: Moss_Giant_Enemy
+  m_Name: Enemy_Moss_Giant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13885,7 +13885,7 @@ GameObject:
   - component: {fileID: 1986895650}
   - component: {fileID: 1986895649}
   m_Layer: 0
-  m_Name: Moss_Giant_Sprite
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
