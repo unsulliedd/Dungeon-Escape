@@ -442,7 +442,7 @@ GameObject:
   - component: {fileID: 281612218}
   m_Layer: 10
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13058,7 +13058,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 748e3d50b90c8104ea2b4e76c26bfecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
+  health: 5
   speed: 2
   gems: 0
   waypointA: {fileID: 546797495}
@@ -14448,7 +14448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 335cdcaf93373de45b2e327062ff7666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
+  health: 1
   speed: 3
   gems: 0
   waypointA: {fileID: 695690615}

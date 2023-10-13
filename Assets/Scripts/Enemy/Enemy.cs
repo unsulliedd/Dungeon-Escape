@@ -18,10 +18,12 @@ public abstract class Enemy : MonoBehaviour
 
     [Header("Enemy References")]
     protected Animator animator;
+    protected Player player;
 
     public virtual void Init()
     {
         animator = GetComponentInChildren<Animator>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
     private void Start()
@@ -31,7 +33,7 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void Update()
     {
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && animator.GetBool("InCombat") == false)
         {
             return;
         }
@@ -56,6 +58,13 @@ public abstract class Enemy : MonoBehaviour
 
         if (!isHit)
             transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
+
+        float distance = Vector3.Distance(transform.localPosition, player.transform.localPosition);
+        if (distance > 2.0f)
+        {
+            isHit = false;
+            animator.SetBool("InCombat", false);
+        }
     }
 
     public virtual void Flip()

@@ -10,11 +10,19 @@ public class MossGiant : Enemy, IDamageable
     public override void Init()
     {
         base.Init();
+        Health = base.health;
     }
 
     public void Damage()
     {
-
+        Health--;
+        animator.SetTrigger("Hit");
+        isHit = true;
+        animator.SetBool("InCombat", true);
+        if (Health < 1)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
 
