@@ -6,6 +6,7 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected int health;
     [SerializeField] protected int speed;
     [SerializeField] protected int gems;
+    protected bool isDead = false;
 
     [Header("Enemy Waypoint")]
     [SerializeField] protected Transform waypointA;
@@ -34,8 +35,11 @@ public abstract class Enemy : MonoBehaviour
     {
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && animator.GetBool("InCombat") == false)
             return;
-        Flip();
-        Movement();
+        if (isDead == false)
+        {
+            Flip();
+            Movement();
+        }
     }
 
     public virtual void Movement()
@@ -43,7 +47,7 @@ public abstract class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.transform.position);
         Vector2 targetPlayerDestination = new(player.transform.position.x, transform.position.y);
 
-        if (distance > 4f)
+        if (distance > 5f)
         {            
             if (transform.position == waypointA.position)
             {
@@ -61,7 +65,7 @@ public abstract class Enemy : MonoBehaviour
             animator.SetBool("InCombat", false);
             transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
         }
-        else if (distance < 4f)
+        else if (distance <= 5f)
         {
             animator.SetBool("InCombat", true);
             animator.SetTrigger("Idle");

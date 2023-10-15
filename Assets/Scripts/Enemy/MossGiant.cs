@@ -20,7 +20,9 @@ public class MossGiant : Enemy, IDamageable
         animator.SetBool("InCombat", true);
         if (Health < 1)
         {
-            Destroy(this.gameObject);
+            isDead = true;
+            animator.SetTrigger("Death");
+            Destroy(this.gameObject, 10f);
         }
     }
 }
