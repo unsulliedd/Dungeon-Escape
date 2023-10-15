@@ -14,7 +14,6 @@ public abstract class Enemy : MonoBehaviour
 
     [Header("Enemy Animation")]
     protected bool idleInitialState = true;
-    protected bool isHit = false;
 
     [Header("Enemy References")]
     protected Animator animator;
@@ -43,39 +42,52 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void Movement()
     {
-        if (transform.position == waypointA.position)
-        {
-            currentTarget = waypointB.position;
-            if (!idleInitialState)
+        float distance = Vector3.Distance(transform.position, player.transform.localPosition);
+
+        if (distance > 3f)
+        {            
+            if (transform.position == waypointA.position)
+            {
+                currentTarget = waypointB.position;
+                if (!idleInitialState)
+                    animator.SetTrigger("Idle");
+            }
+            else if (transform.position == waypointB.position)
+            {
+                currentTarget = waypointA.position;
+                idleInitialState = false;
                 animator.SetTrigger("Idle");
-        }
-        else if (transform.position == waypointB.position)
-        {
-            currentTarget = waypointA.position;
-            idleInitialState = false;
-            animator.SetTrigger("Idle");
-        }
+            }
 
-        if (!isHit)
-            transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
-
-        float distance = Vector3.Distance(transform.localPosition, player.transform.localPosition);
-        if (distance > 2.0f)
-        {
-            isHit = false;
             animator.SetBool("InCombat", false);
+            Vector3 targetPosition = new(currentTarget.x, transform.position.y, currentTarget.z);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        }
+        else if (distance < 3f)
+        {
+            animator.SetBool("InCombat", true);
+            Vector3 targetPlayerPosition = new(player.transform.position.x, transform.position.y, player.transform.position.z);
+            transform.position = Vector3.MoveTowards(transform.position, targetPlayerPosition, speed * Time.deltaTime);
         }
     }
 
     public virtual void Flip()
     {
-        if (currentTarget == waypointA.position)
+        Vector3 direction = player.transform.localPosition - transform.localPosition;
+
+        if (animator.GetBool("InCombat") == false)
         {
-            transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            if (currentTarget == waypointA.position)
+                transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            else
+                transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         }
-        else
+        else if (animator.GetBool("InCombat") == true)
         {
-            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            if (direction.x > 0)
+                transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            else if (direction.x < 0)
+                transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         }
     }
 }
