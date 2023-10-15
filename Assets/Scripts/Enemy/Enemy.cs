@@ -33,18 +33,17 @@ public abstract class Enemy : MonoBehaviour
     public virtual void Update()
     {
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && animator.GetBool("InCombat") == false)
-        {
             return;
-        }
         Flip();
         Movement();
     }
 
     public virtual void Movement()
     {
-        float distance = Vector3.Distance(transform.position, player.transform.localPosition);
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+        Vector2 targetPlayerDestination = new(player.transform.position.x, transform.position.y);
 
-        if (distance > 3f)
+        if (distance > 4f)
         {            
             if (transform.position == waypointA.position)
             {
@@ -60,20 +59,19 @@ public abstract class Enemy : MonoBehaviour
             }
 
             animator.SetBool("InCombat", false);
-            Vector3 targetPosition = new(currentTarget.x, transform.position.y, currentTarget.z);
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
         }
-        else if (distance < 3f)
+        else if (distance < 4f)
         {
             animator.SetBool("InCombat", true);
-            Vector3 targetPlayerPosition = new(player.transform.position.x, transform.position.y, player.transform.position.z);
-            transform.position = Vector3.MoveTowards(transform.position, targetPlayerPosition, speed * Time.deltaTime);
+            animator.SetTrigger("Idle");
+            transform.position = Vector2.MoveTowards(transform.position, targetPlayerDestination, speed * Time.deltaTime);
         }
     }
 
     public virtual void Flip()
     {
-        Vector3 direction = player.transform.localPosition - transform.localPosition;
+        float direction = player.transform.position.x - transform.position.x;
 
         if (animator.GetBool("InCombat") == false)
         {
@@ -84,9 +82,9 @@ public abstract class Enemy : MonoBehaviour
         }
         else if (animator.GetBool("InCombat") == true)
         {
-            if (direction.x > 0)
+            if (direction > 0)
                 transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-            else if (direction.x < 0)
+            else if (direction < 0)
                 transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         }
     }
