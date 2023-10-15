@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     [Header("Movement Settings")]
     [SerializeField] private float _speed = 7f;
@@ -32,6 +32,8 @@ public class Player : MonoBehaviour
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
     private PlayerAnimation _playerAnimation;
+
+    public int Health { get; set; }
 
     void Awake()
     {
@@ -158,5 +160,10 @@ public class Player : MonoBehaviour
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckRadius, _groundLayerMask);
+    }
+
+    public void Damage()
+    {
+        Debug.Log("Player's Damage() called");
     }
 }

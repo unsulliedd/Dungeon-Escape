@@ -12933,6 +12933,7 @@ GameObject:
   - component: {fileID: 1064260275}
   - component: {fileID: 1064260277}
   - component: {fileID: 1064260276}
+  - component: {fileID: 1064260278}
   m_Layer: 11
   m_Name: Hit-Box
   m_TagString: Untagged
@@ -13027,6 +13028,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.25116208, y: 0.062000804}
   m_EdgeRadius: 0
+--- !u!114 &1064260278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064260274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a732cce6926d545479ace6dcd28aa775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1097295344
 GameObject:
   m_ObjectHideFlags: 0
