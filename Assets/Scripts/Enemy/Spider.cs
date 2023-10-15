@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Spider : Enemy, IDamageable
 {
+    [SerializeField] private GameObject _acidPrefab;
     public int Health { get; set; }
 
     // Initilize
@@ -15,6 +16,16 @@ public class Spider : Enemy, IDamageable
 
     public void Damage()
     {
+        Health--;
+        animator.SetBool("InCombat", true);
+        if (Health < 1)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
+    public void Attack()
+    {
+        Instantiate(_acidPrefab, transform.position, Quaternion.identity);
     }
 }
