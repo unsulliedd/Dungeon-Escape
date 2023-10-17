@@ -66,7 +66,7 @@ public abstract class Enemy : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
         }
         else if (distance <= 5f)
-        {
+        {                
             animator.SetBool("InCombat", true);
             animator.SetTrigger("Idle");
             transform.position = Vector2.MoveTowards(transform.position, targetPlayerDestination, speed * Time.deltaTime);
