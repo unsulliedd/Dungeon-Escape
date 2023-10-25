@@ -7,6 +7,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _touchControls;
     [SerializeField] private TextMeshProUGUI _playerDiamondCount;
     [SerializeField] private Image _selectionIMG;
+    [SerializeField] private Button item0btn;
+    [SerializeField] private Button item1btn;
+    [SerializeField] private Button item2btn;
+
     private static UIManager _instance;
 
     public static UIManager Instance
@@ -39,6 +43,25 @@ public class UIManager : MonoBehaviour
     public void UpdateShopSelection(int yPos)
     {
         _selectionIMG.rectTransform.anchoredPosition = new Vector2(_selectionIMG.rectTransform.anchoredPosition.x, yPos);
+    }
+
+    public void UpdateOwnedItem(int item)
+    {
+        switch (item)
+        {
+            case 0:
+                item0btn.interactable = false;
+                break;
+            case 1:
+                item1btn.interactable = false;
+                break;
+            case 2:
+                item2btn.interactable = false;
+                break;
+            default:
+            Debug.Log("Invalid Item");
+                break;
+        }
     }
 
     bool IsTouchDevice()
