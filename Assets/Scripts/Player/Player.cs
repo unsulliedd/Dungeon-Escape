@@ -33,6 +33,9 @@ public class Player : MonoBehaviour, IDamageable
     private Rigidbody2D _rigidBody2D;
     private PlayerAnimation _playerAnimation;
 
+    [Header("Properties")]
+    public int Diamonds;
+
     public int Health { get; set; }
 
     void Awake()
