@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MossGiant : Enemy, IDamageable
@@ -24,6 +25,8 @@ public class MossGiant : Enemy, IDamageable
             {
                 isDead = true;
                 animator.SetTrigger("Death");
+                GameObject diamonds = Instantiate(_diamondPrefab, transform.position, Quaternion.identity);
+                diamonds.GetComponent<Diamond>().diamondValue = base.gems;
                 Destroy(this.gameObject, 10f);
             }
         }

@@ -19,6 +19,7 @@ public abstract class Enemy : MonoBehaviour
     [Header("Enemy References")]
     protected Animator animator;
     protected Player player;
+    [SerializeField] protected GameObject _diamondPrefab;
 
     public virtual void Init()
     {
