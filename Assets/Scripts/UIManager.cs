@@ -5,11 +5,13 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject _touchControls;
+    [SerializeField] private TextMeshProUGUI _HUDDiamondCount;
     [SerializeField] private TextMeshProUGUI _playerDiamondCount;
     [SerializeField] private Image _selectionIMG;
     [SerializeField] private Button item0btn;
     [SerializeField] private Button item1btn;
     [SerializeField] private Button item2btn;
+    [SerializeField] private Image[] _healthBars;
 
     private static UIManager _instance;
 
@@ -38,6 +40,7 @@ public class UIManager : MonoBehaviour
     public void UpdatePlayerDiamondCount(int diamonds)
     {
         _playerDiamondCount.text = "" + diamonds + " Diamond";
+        _HUDDiamondCount.text = "" + diamonds;
     }
 
     public void UpdateShopSelection(int yPos)
@@ -61,6 +64,15 @@ public class UIManager : MonoBehaviour
             default:
             Debug.Log("Invalid Item");
                 break;
+        }
+    }
+
+    public void UpdateHealth(int health)
+    {
+        for (int i = 0; i <= health; i++)
+        {
+            if (i == health)
+                _healthBars[i].enabled = false;
         }
     }
 

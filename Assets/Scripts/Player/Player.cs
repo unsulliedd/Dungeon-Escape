@@ -34,20 +34,23 @@ public class Player : MonoBehaviour, IDamageable
     private PlayerAnimation _playerAnimation;
 
     [Header("Properties")]
+    [SerializeField] private bool isPlayerAlive;
     public int Diamonds;
 
     public int Health { get; set; }
 
-    void Awake()
+    void Start()
     {
         if (!TryGetComponent(out _rigidBody2D))
             Debug.Log("Player's Rigidbody2D is null");
         if (!TryGetComponent(out _playerAnimation))
             Debug.Log("Player's PlayerAnimation is null");
+        Health = 4;
     }
 
     void Update()
     {
+        IsPlayerAlive();
         _isGrounded = IsGrounded();
 
         Flip();
@@ -167,6 +170,25 @@ public class Player : MonoBehaviour, IDamageable
 
     public void Damage()
     {
-        Debug.Log("Player's Damage() called");
+        if (Health < 1)
+            return;
+        Health--;
+        UIManager.Instance.UpdateHealth(Health);
+        if (Health < 1)
+        {
+            isPlayerAlive = false;
+            _playerAnimation.DeathAnimation();
+        }
+    }
+
+    public void AddDiamonds(int amount)
+    {
+        Diamonds += amount;
+        UIManager.Instance.UpdatePlayerDiamondCount(Diamonds);
+    }
+
+    public bool IsPlayerAlive()
+    {
+        return isPlayerAlive;
     }
 }

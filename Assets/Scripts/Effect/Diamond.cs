@@ -17,7 +17,7 @@ public class Diamond : MonoBehaviour
     {
         if (_player != null && other.CompareTag("Player"))
         {
-            _player.Diamonds += diamondValue;
+            _player.AddDiamonds(diamondValue);
             Destroy(gameObject);
         }
     }

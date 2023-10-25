@@ -38,4 +38,9 @@ public class PlayerAnimation : MonoBehaviour
     {
         _animator.SetTrigger("GroundAttack");
     }
+
+    public void DeathAnimation()
+    {
+        _animator.SetTrigger("Death");
+    }
 }
