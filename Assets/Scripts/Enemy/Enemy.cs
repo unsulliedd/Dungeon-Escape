@@ -48,7 +48,7 @@ public abstract class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.transform.position);
         Vector2 targetPlayerDestination = new(player.transform.position.x, transform.position.y);
 
-        if (distance > 5f)
+        if (distance > 5f || !player.IsPlayerAlive())
         {            
             if (transform.position == waypointA.position)
             {
@@ -66,12 +66,9 @@ public abstract class Enemy : MonoBehaviour
             animator.SetBool("InCombat", false);
             transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
         }
-        else if (distance <= 5f)
+        else if (distance <= 5f && player.IsPlayerAlive())
         {
-            if (player.IsPlayerAlive() == false)
-                animator.SetBool("InCombat", false);
-            else
-                animator.SetBool("InCombat", true);
+            animator.SetBool("InCombat", true);
             animator.SetTrigger("Idle");
             transform.position = Vector2.MoveTowards(transform.position, targetPlayerDestination, speed * Time.deltaTime);
         }

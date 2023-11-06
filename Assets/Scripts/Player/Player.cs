@@ -20,6 +20,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float _groundCheckRadius = 0.27f;
     [SerializeField] private GameObject _groundCheck;
     [SerializeField] private LayerMask _groundLayerMask;
+    [SerializeField] private LayerMask _spikeLayerMask;
 
     [Header("Gravity Settings")]
     [SerializeField] private float _gravityScale = 2f;
@@ -50,27 +51,43 @@ public class Player : MonoBehaviour, IDamageable
 
     void Update()
     {
-        IsPlayerAlive();
+        if (!IsPlayerAlive())
+            return;
+
         _isGrounded = IsGrounded();
 
+        if (OnSpike())
+        {
+            InstantDeath();
+        }
         Flip();
         UpdateJumpCounters();
+        
     }
 
     private void FixedUpdate()
     {
-        Movement();
+        if (!IsPlayerAlive())
+            return;
+
+        Movement();          
         Gravity();
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (!IsPlayerAlive())
+            return;
+
         _horizontalMoveInput = context.ReadValue<Vector2>().x;
         _playerAnimation.RunAnimation(_horizontalMoveInput);
     }
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (!IsPlayerAlive())
+            return;
+
         if (context.started)
             _jumpBufferTimeCounter = _jumpBufferTime;
         else if (context.performed)
@@ -163,9 +180,28 @@ public class Player : MonoBehaviour, IDamageable
             _rigidBody2D.gravityScale = _gravityScale;
     }
 
+    private void InstantDeath()
+    {
+        Health = 0;
+        UIManager.Instance.UpdateHealth(Health);
+        OnDeath();
+    }
+
+    private void OnDeath()
+    {
+        _rigidBody2D.velocity = Vector2.zero;
+        isPlayerAlive = false;
+        _playerAnimation.DeathAnimation();
+    }
+
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckRadius, _groundLayerMask);
+    }
+
+    private bool OnSpike()
+    {
+        return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckRadius, _spikeLayerMask);
     }
 
     public void Damage()
@@ -175,10 +211,7 @@ public class Player : MonoBehaviour, IDamageable
         Health--;
         UIManager.Instance.UpdateHealth(Health);
         if (Health < 1)
-        {
-            isPlayerAlive = false;
-            _playerAnimation.DeathAnimation();
-        }
+            OnDeath();
     }
 
     public void AddDiamonds(int amount)

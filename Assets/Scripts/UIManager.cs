@@ -69,6 +69,14 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHealth(int health)
     {
+        if (health == 0)
+        {
+            _healthBars[0].enabled = false;
+            _healthBars[1].enabled = false;
+            _healthBars[2].enabled = false;
+            _healthBars[3].enabled = false;
+        }
+
         for (int i = 0; i <= health; i++)
         {
             if (i == health)
