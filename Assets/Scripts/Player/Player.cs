@@ -17,7 +17,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float _jumpBufferTimeCounter;
     [SerializeField] private bool _canSecondJump;
     [SerializeField] private bool _isGrounded;
-    [SerializeField] private float _groundCheckRadius = 0.27f;
+    [SerializeField] private float _groundCheckLength = 0.5f;
     [SerializeField] private GameObject _groundCheck;
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private LayerMask _spikeLayerMask;
@@ -57,12 +57,10 @@ public class Player : MonoBehaviour, IDamageable
         _isGrounded = IsGrounded();
 
         if (OnSpike())
-        {
             InstantDeath();
-        }
+
         Flip();
         UpdateJumpCounters();
-        
     }
 
     private void FixedUpdate()
@@ -70,7 +68,7 @@ public class Player : MonoBehaviour, IDamageable
         if (!IsPlayerAlive())
             return;
 
-        Movement();          
+        Movement();     
         Gravity();
     }
 
@@ -153,8 +151,11 @@ public class Player : MonoBehaviour, IDamageable
 
     private void UpdateJumpCounters()
     {
-        if (_isGrounded && _rigidBody2D.velocity.y < 0)
+        if (_isGrounded && _rigidBody2D.velocity.y < 0.5)
+        {
             _playerAnimation.JumpAnimation(false);
+            _playerAnimation.FallAnimation(false);
+        }
 
         if (_isGrounded)
         {
@@ -174,7 +175,7 @@ public class Player : MonoBehaviour, IDamageable
             _playerAnimation.FallAnimation(true);
 
             _rigidBody2D.gravityScale = _gravityScale * _fallMultiplier;            
-            _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, Mathf.Max(_rigidBody2D.velocity.y, -_maxFallSpeed));
+            _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, Mathf.Max(_rigidBody2D.velocity.y, - _maxFallSpeed));
         }
         else
             _rigidBody2D.gravityScale = _gravityScale;
@@ -196,12 +197,12 @@ public class Player : MonoBehaviour, IDamageable
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckRadius, _groundLayerMask);
+        return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckLength, _groundLayerMask);
     }
 
     private bool OnSpike()
     {
-        return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckRadius, _spikeLayerMask);
+        return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckLength, _spikeLayerMask);
     }
 
     public void Damage()
