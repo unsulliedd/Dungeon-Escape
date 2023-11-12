@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
-        GameManager.Instance.Restart();
+        SceneManager.LoadScene(1);
     }
 
     public void OpenMenu()
@@ -93,6 +94,6 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        GameManager.Instance.Quit();
+        Application.Quit();
     }
 }
