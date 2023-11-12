@@ -94,6 +94,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void PauseGame()
+    {
+        _pauseMenuPanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        _pauseMenuPanel.SetActive(false);
+        Time.timeScale = 1;
+    }
+
     public void GameOver()
     {
         StartCoroutine(ShowGameOverPanelAfterDelay(1f));
