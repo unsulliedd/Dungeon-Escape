@@ -14,20 +14,18 @@ public class GameManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         _instance = this;
+        DontDestroyOnLoad(this.gameObject);
     }
 
     private void Start()
     {
         HasKeyToCastle = false;
-        SceneManager.LoadScene(0);
     }
 
     private void Update()
     {
         if (!player.IsPlayerAlive())
-        {
             OnPlayerDeath();
-        }
     }
 
     private void OnPlayerDeath()
@@ -43,10 +41,5 @@ public class GameManager : MonoBehaviour
     public void OpenMainMenu()
     {
         SceneManager.LoadScene(0);
-    }
-
-    public void Quit()
-    {
-        Application.Quit();
     }
 }
