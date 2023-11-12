@@ -1,17 +1,27 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("HUD")]
     [SerializeField] private GameObject _touchControls;
     [SerializeField] private TextMeshProUGUI _HUDDiamondCount;
+    [SerializeField] private Image[] _healthBars;
+
+    [Header("Shop UI")]
     [SerializeField] private TextMeshProUGUI _playerDiamondCount;
     [SerializeField] private Image _selectionIMG;
     [SerializeField] private Button item0btn;
     [SerializeField] private Button item1btn;
     [SerializeField] private Button item2btn;
-    [SerializeField] private Image[] _healthBars;
+
+    [Header("Pause Menu")]
+    [SerializeField] private GameObject _pauseMenuPanel;
+
+    [Header("Game Over")]
+    [SerializeField] private GameObject _gameOverPanel;
 
     private static UIManager _instance;
 
@@ -82,6 +92,17 @@ public class UIManager : MonoBehaviour
             if (i == health)
                 _healthBars[i].enabled = false;
         }
+    }
+
+    public void GameOver()
+    {
+        StartCoroutine(ShowGameOverPanelAfterDelay(1f));
+    }
+
+    IEnumerator ShowGameOverPanelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        _gameOverPanel.SetActive(true);
     }
 
     bool IsTouchDevice()
