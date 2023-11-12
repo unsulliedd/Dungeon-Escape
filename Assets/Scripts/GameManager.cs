@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
         _instance = this;
     }
 
+    private void Start()
+    {
+        HasKeyToCastle = false;
+        SceneManager.LoadScene(0);
+    }
+
     private void Update()
     {
         if (!player.IsPlayerAlive())
@@ -31,6 +37,16 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
+        SceneManager.LoadScene(1);
+    }
+
+    public void OpenMainMenu()
+    {
         SceneManager.LoadScene(0);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
