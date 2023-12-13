@@ -24,6 +24,11 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
+    public void BlockAnimation(bool blocking)
+    {
+        _animator.SetBool("Blocking", blocking);
+    }
+
     public void JumpAnimation(bool jumping)
     {
         _animator.SetBool("Jumping", jumping);

@@ -29,6 +29,7 @@ public class Player : MonoBehaviour, IDamageable
 
     [Header("Attack Settings")]
     [SerializeField] private bool _groundAttack;
+    [SerializeField] private bool _blocking;
 
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
@@ -48,35 +49,34 @@ public class Player : MonoBehaviour, IDamageable
             Debug.Log("Player's PlayerAnimation is null");
         Health = 4;
     }
+    private void FixedUpdate()
+    {
+        if (!IsPlayerAlive())
+            return;
+        _isGrounded = IsGrounded();
+
+        if (OnSpike())
+            InstantDeath();
+
+        Movement();
+        Gravity();
+    }
 
     void Update()
     {
         if (!IsPlayerAlive())
             return;
 
-        _isGrounded = IsGrounded();
-
-        if (OnSpike())
-            InstantDeath();
-
         Flip();
         UpdateJumpCounters();
-    }
-
-    private void FixedUpdate()
-    {
-        if (!IsPlayerAlive())
-            return;
-
-        Movement();     
-        Gravity();
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
         if (!IsPlayerAlive())
             return;
-
+        if (_blocking)
+            return;
         _horizontalMoveInput = context.ReadValue<Vector2>().x;
         _playerAnimation.RunAnimation(_horizontalMoveInput);
     }
@@ -90,12 +90,12 @@ public class Player : MonoBehaviour, IDamageable
             _jumpBufferTimeCounter = _jumpBufferTime;
         else if (context.performed)
         {
-            if (_cayoteTimeCounter > 0f && _jumpBufferTimeCounter > 0f && !_groundAttack)
+            if (_cayoteTimeCounter > 0f && _jumpBufferTimeCounter > 0f && !_groundAttack && !_blocking)
             {                
                 _canSecondJump = true;
                 HandleJump();
             }
-            else if (_canSecondJump && _rigidBody2D.velocity.y > 0f && !_groundAttack)
+            else if (_canSecondJump && _rigidBody2D.velocity.y > 0f && !_groundAttack && !_blocking)
             {
                 _canSecondJump = false;
                 HandleJump();
@@ -118,6 +118,23 @@ public class Player : MonoBehaviour, IDamageable
     {
         yield return new WaitForSeconds(1f);
         _groundAttack = false;
+    }
+
+    public void OnBlock(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (_isGrounded)
+            {
+                _playerAnimation.BlockAnimation(true);
+                _blocking = true;
+            }
+        }
+        else if (context.canceled)
+        {
+            _playerAnimation.BlockAnimation(false);
+            _blocking = false;
+        }
     }
 
     private void Movement()
@@ -208,6 +225,8 @@ public class Player : MonoBehaviour, IDamageable
     public void Damage()
     {
         if (Health < 1)
+            return;
+        if (_blocking)
             return;
         Health--;
         UIManager.Instance.UpdateHealth(Health);
