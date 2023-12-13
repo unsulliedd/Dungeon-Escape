@@ -48,8 +48,10 @@ public class Player : MonoBehaviour, IDamageable
         if (!TryGetComponent(out _playerAnimation))
             Debug.Log("Player's PlayerAnimation is null");
         Health = 4;
+        isPlayerAlive = true;
     }
-    private void FixedUpdate()
+
+    void FixedUpdate()
     {
         if (!IsPlayerAlive())
             return;
