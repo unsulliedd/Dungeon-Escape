@@ -158,6 +158,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
+    Android: com.BKGaming.DungeonEscape
     Standalone: com.DefaultCompany.2DProject
   buildNumber:
     Standalone: 0
@@ -166,9 +167,9 @@ PlayerSettings:
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 22
-  AndroidTargetSdkVersion: 0
-  AndroidPreferredInstallLocation: 1
+  AndroidMinSdkVersion: 29
+  AndroidTargetSdkVersion: 34
+  AndroidPreferredInstallLocation: 0
   aotOptions: 
   stripEngineCode: 1
   iPhoneStrippingLevel: 0
