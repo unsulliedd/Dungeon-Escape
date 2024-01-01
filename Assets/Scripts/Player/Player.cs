@@ -6,7 +6,8 @@ public class Player : MonoBehaviour, IDamageable
 {
     [Header("Movement Settings")]
     [SerializeField] private float _speed = 7f;
-    [SerializeField] private float _jumpForce = 16f;    
+    [SerializeField] private float _jumpForce = 16f;
+    [SerializeField] private bool _running;
     private float _horizontalMoveInput;
     private bool _isFacingRight;
 
@@ -77,9 +78,17 @@ public class Player : MonoBehaviour, IDamageable
     {
         if (!IsPlayerAlive())
             return;
-        if (_blocking)
+        // prevent movement while blocking and attacking
+        if (_blocking || _groundAttack)
             return;
+
         _horizontalMoveInput = context.ReadValue<Vector2>().x;
+
+        if (_horizontalMoveInput != 0)
+            _running = true;
+        else
+            _running = false;
+
         _playerAnimation.RunAnimation(_horizontalMoveInput);
     }
 
@@ -111,6 +120,10 @@ public class Player : MonoBehaviour, IDamageable
     {
         if (context.performed && _isGrounded)
         {
+            // prevent attacking while running
+            if (_running)
+                return;
+
             _groundAttack = true;
             _playerAnimation.GroundAttackAnimation();
             StartCoroutine(GroundAttackRoutine());
@@ -118,7 +131,7 @@ public class Player : MonoBehaviour, IDamageable
     }
     IEnumerator GroundAttackRoutine()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.8f);
         _groundAttack = false;
     }
 
