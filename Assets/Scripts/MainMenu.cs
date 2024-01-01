@@ -12,7 +12,16 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject _settingsPanel;
     [SerializeField] private GameObject _creditsPanel;
 
+    [SerializeField] private AudioClip clickSound;
+
     private GameObject currentPanel;
+    private AudioSource audioSource;
+
+    private void Awake()
+    {
+        if (!TryGetComponent(out audioSource))
+            Debug.Log("Player's Audio Source is null");
+    }
 
     private void Start()
     {
@@ -30,41 +39,49 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
+        ClickSound();
         SceneManager.LoadScene(1);
     }
 
     public void OpenMenu()
     {
+        ClickSound();
         _mainMenuPanel.SetActive(false);
         _optionsMenuPanel.SetActive(true);
     }
 
     public void OpenLevels()
     {
+        ClickSound();
         _optionsMenuPanel.SetActive(false);
         _levelsPanel.SetActive(true);
     }
 
     public void OpenSettings()
     {
+        ClickSound();
         _optionsMenuPanel.SetActive(false);
         _settingsPanel.SetActive(true);
     }
 
     public void OpenStats()
     {
+        ClickSound();
         _optionsMenuPanel.SetActive(false);
         _statsPanel.SetActive(true);
     }
 
     public void OpenCredits()
     {
+        ClickSound();
         _optionsMenuPanel.SetActive(false);
         _creditsPanel.SetActive(true);
     }
 
     public void NavigateBack()
     {
+        ClickSound();
+
         if (_optionsMenuPanel.activeSelf)
         {
             currentPanel = _optionsMenuPanel;
@@ -94,6 +111,12 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
+        ClickSound();
         Application.Quit();
+    }
+
+    private void ClickSound()
+    {
+        audioSource.PlayOneShot(clickSound);
     }
 }
