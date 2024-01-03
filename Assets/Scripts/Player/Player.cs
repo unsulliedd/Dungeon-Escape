@@ -213,13 +213,6 @@ public class Player : MonoBehaviour, IDamageable
             _rigidBody2D.gravityScale = _gravityScale;
     }
 
-    private void InstantDeath()
-    {
-        Health = 0;
-        UIManager.Instance.UpdateHealth(Health);
-        OnDeath();
-    }
-
     private void OnDeath()
     {
         _rigidBody2D.velocity = Vector2.zero;
@@ -235,6 +228,12 @@ public class Player : MonoBehaviour, IDamageable
     private bool OnSpike()
     {
         return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckLength, _spikeLayerMask);
+    }
+    public void InstantDeath()
+    {
+        Health = 0;
+        UIManager.Instance.UpdateHealth(Health);
+        OnDeath();
     }
 
     public void Damage()
