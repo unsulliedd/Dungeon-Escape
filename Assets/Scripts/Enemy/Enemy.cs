@@ -12,7 +12,8 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected Transform waypoint1;
     [SerializeField] protected Transform waypoint2;
     protected Vector3 currentTarget;
-    private float distance;
+    protected float distance;
+    protected float gapBetweenPlayer = 1.5f;
 
     [Header("Enemy Animation")]
     protected bool idleInitialState = true;
@@ -20,6 +21,7 @@ public abstract class Enemy : MonoBehaviour
     [Header("Enemy References")]
     protected Animator animator;
     protected Player player;
+    protected bool playerAlive;
     [SerializeField] protected GameObject _diamondPrefab;
 
     public virtual void Init()
@@ -31,10 +33,12 @@ public abstract class Enemy : MonoBehaviour
     private void Start()
     {
         Init();
+        currentTarget = waypoint1.position;
     }
 
     public virtual void Update()
     {
+        playerAlive = player.IsPlayerAlive();
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && animator.GetBool("InCombat") == false)
             return;
         if (isDead == false)
@@ -48,17 +52,13 @@ public abstract class Enemy : MonoBehaviour
     {            
         distance = Vector2.Distance(transform.position, player.transform.position);
         float distanceX = transform.position.x - player.transform.position.x;
-        float gap = 1.5f;
 
-        if (!player.IsPlayerAlive())
-            distance = 11f;
+        if (distanceX < 0)
+            gapBetweenPlayer *= -1;
 
-        if (distanceX < 0) 
-            gap *= -1;
+        Vector2 targetPlayerDestination = new(player.transform.position.x + gapBetweenPlayer, transform.position.y);
 
-        Vector2 targetPlayerDestination = new(player.transform.position.x + gap, transform.position.y);
-
-        if (distance > 10f || !player.IsPlayerAlive())
+        if (distance > 6f || !playerAlive)
         {            
             if (transform.position == waypoint1.position)
             {
@@ -76,7 +76,7 @@ public abstract class Enemy : MonoBehaviour
             animator.SetBool("InCombat", false);
             transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
         }
-        if (distance < 10f && player.IsPlayerAlive())
+        if (distance < 6f && playerAlive)
         {
             if (distance < 3f)
             {
@@ -94,14 +94,14 @@ public abstract class Enemy : MonoBehaviour
     {
         float direction = player.transform.position.x - transform.position.x;
 
-        if (distance > 10f)
+        if (distance > 6f || !playerAlive)
         {
             if (currentTarget == waypoint1.position)
                 transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             else
                 transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         }
-        else if (distance < 10f)
+        else if (distance < 6f && playerAlive)
         {
             if (direction > 0)
                 transform.rotation = Quaternion.Euler(0f, 0f, 0f);
