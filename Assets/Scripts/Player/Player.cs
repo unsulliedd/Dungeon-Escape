@@ -7,9 +7,9 @@ public class Player : MonoBehaviour, IDamageable
     [Header("Movement Settings")]
     [SerializeField] private float _speed = 7f;
     [SerializeField] private float _jumpForce = 16f;
-    [SerializeField] private bool _running;
+    [SerializeField] private bool _isRunning;
     private float _horizontalMoveInput;
-    private bool _isFacingRight;
+    public bool _isFacingLeft;
 
     [Header("Jump Settings")]
     [SerializeField] private float _cayoteTime = 0.1f;
@@ -35,6 +35,7 @@ public class Player : MonoBehaviour, IDamageable
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
     private PlayerAnimation _playerAnimation;
+    private PlayerSound _playerSound;
 
     [Header("Properties")]
     [SerializeField] private bool isPlayerAlive;
@@ -42,12 +43,14 @@ public class Player : MonoBehaviour, IDamageable
 
     public int Health { get; set; }
 
-    void Start()
+    void Awake()
     {
         if (!TryGetComponent(out _rigidBody2D))
             Debug.Log("Player's Rigidbody2D is null");
         if (!TryGetComponent(out _playerAnimation))
             Debug.Log("Player's PlayerAnimation is null");
+        if (!TryGetComponent(out _playerSound))
+            Debug.Log("Player's PlayerSound is null");
         Health = 4;
         isPlayerAlive = true;
     }
@@ -72,22 +75,21 @@ public class Player : MonoBehaviour, IDamageable
 
         Flip();
         UpdateJumpCounters();
+        FootStep();
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (!IsPlayerAlive())
-            return;
         // prevent movement while blocking and attacking
-        if (_blocking || _groundAttack)
+        if (_blocking || _groundAttack || !IsPlayerAlive())
             return;
 
         _horizontalMoveInput = context.ReadValue<Vector2>().x;
 
-        if (_horizontalMoveInput != 0)
-            _running = true;
+        if (_horizontalMoveInput != 0 && _isGrounded)
+            _isRunning = true;            
         else
-            _running = false;
+            _isRunning = false;
 
         _playerAnimation.RunAnimation(_horizontalMoveInput);
     }
@@ -118,14 +120,15 @@ public class Player : MonoBehaviour, IDamageable
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (context.performed && _isGrounded)
+        if (context.performed && _isGrounded && !_groundAttack)
         {
             // prevent attacking while running
-            if (_running)
+            if (_isRunning)
                 return;
 
             _groundAttack = true;
             _playerAnimation.GroundAttackAnimation();
+            AudioManager.Instance.PlayPlayerSounds(2);
             StartCoroutine(GroundAttackRoutine());
         }
     }
@@ -157,24 +160,32 @@ public class Player : MonoBehaviour, IDamageable
         _rigidBody2D.velocity = new Vector2(_horizontalMoveInput * _speed, _rigidBody2D.velocity.y);
     }
 
+    private void FootStep()
+    {
+        if (_rigidBody2D.velocity.y < 0.5 && _isRunning && _isGrounded)
+            _playerSound.RunSound();
+        else
+            _playerSound.StopRunSound();
+    }
+
     private void Flip()
     {
-        if (_horizontalMoveInput < 0 && !_isFacingRight)
+        if (_horizontalMoveInput < 0 && !_isFacingLeft)
         {
             transform.Rotate(0f, 180f, 0f);
-            _isFacingRight = !_isFacingRight;
+            _isFacingLeft = !_isFacingLeft;
         }
-        else if (_horizontalMoveInput > 0 && _isFacingRight)
+        else if (_horizontalMoveInput > 0 && _isFacingLeft)
         {
             transform.Rotate(0f, 180f, 0f);
-            _isFacingRight = !_isFacingRight;
+            _isFacingLeft = !_isFacingLeft;
         }
     }
 
     private void HandleJump()
     {
         _playerAnimation.JumpAnimation(true);
-
+        AudioManager.Instance.PlayPlayerSounds(0);
         _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, 0f);
         _rigidBody2D.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
 
@@ -205,9 +216,10 @@ public class Player : MonoBehaviour, IDamageable
         if (_rigidBody2D.velocity.y < -1 && (_cayoteTimeCounter < 0f || _jumpBufferTimeCounter < 0f))
         {
             _playerAnimation.FallAnimation(true);
-
             _rigidBody2D.gravityScale = _gravityScale * _fallMultiplier;            
             _rigidBody2D.velocity = new Vector2(_rigidBody2D.velocity.x, Mathf.Max(_rigidBody2D.velocity.y, - _maxFallSpeed));
+            if (_isGrounded)
+               AudioManager.Instance.PlayPlayerSounds(1);
         }
         else
             _rigidBody2D.gravityScale = _gravityScale;
@@ -217,6 +229,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         _rigidBody2D.velocity = Vector2.zero;
         isPlayerAlive = false;
+        AudioManager.Instance.PlayPlayerSounds(4);
         _playerAnimation.DeathAnimation();
     }
 
@@ -243,6 +256,7 @@ public class Player : MonoBehaviour, IDamageable
         if (_blocking)
             return;
         Health--;
+        AudioManager.Instance.PlayPlayerSounds(3);
         UIManager.Instance.UpdateHealth(Health);
         if (Health < 1)
             OnDeath();
@@ -251,6 +265,7 @@ public class Player : MonoBehaviour, IDamageable
     public void AddDiamonds(int amount)
     {
         Diamonds += amount;
+        AudioManager.Instance.PlayPlayerSounds(5);
         UIManager.Instance.UpdatePlayerDiamondCount(Diamonds);
     }
 

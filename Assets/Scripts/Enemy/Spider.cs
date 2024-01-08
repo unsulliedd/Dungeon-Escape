@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Spider : Enemy, IDamageable
@@ -24,6 +22,7 @@ public class Spider : Enemy, IDamageable
             {
                 isDead = true;
                 animator.SetTrigger("Death");
+                AudioManager.Instance.PlaySpiderSounds(1, transform.position);
                 GameObject diamonds = Instantiate(_diamondPrefab, transform.position, Quaternion.identity);
                 diamonds.GetComponent<Diamond>().diamondValue = base.gems;
                 Destroy(this.gameObject, 10f);
@@ -33,6 +32,7 @@ public class Spider : Enemy, IDamageable
 
     public void Attack()
     {
+        AudioManager.Instance.PlaySpiderSounds(0, transform.position);
         Instantiate(_acidPrefab, transform.position, Quaternion.identity);
     }
 }

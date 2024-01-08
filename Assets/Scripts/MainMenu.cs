@@ -13,6 +13,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject _creditsPanel;
 
     [SerializeField] private AudioClip clickSound;
+    [SerializeField] private AudioSource _mainMenuMusic;
 
     private GameObject currentPanel;
     private AudioSource audioSource;
@@ -26,6 +27,7 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         ShowPanel(_mainMenuPanel);
+        _mainMenuMusic.Play();
     }
 
     private void ShowPanel(GameObject panelToShow)

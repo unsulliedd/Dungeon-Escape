@@ -37,16 +37,19 @@ public class Shop : MonoBehaviour
         {
             case 0:
                 UIManager.Instance.UpdateShopSelection(60);
+                AudioManager.Instance.PlayClickSound();
                 _currentSelectedItem = 0;
                 _currentItemelectedCost = 10;
                 break;
             case 1:
                 UIManager.Instance.UpdateShopSelection(-40);
+                AudioManager.Instance.PlayClickSound();
                 _currentSelectedItem = 1;
                 _currentItemelectedCost = 10;
                 break;
             case 2:
                 UIManager.Instance.UpdateShopSelection(-144);
+                AudioManager.Instance.PlayClickSound();
                 _currentSelectedItem = 2;
                 _currentItemelectedCost = 20;
                 break;
@@ -78,6 +81,7 @@ public class Shop : MonoBehaviour
                     Debug.Log("Invalid Item");
                     break;
             }
+            AudioManager.Instance.PlayClickSound();
             _player.Diamonds -= _currentItemelectedCost;
             UIManager.Instance.UpdatePlayerDiamondCount(_player.Diamonds);
         }
@@ -85,6 +89,7 @@ public class Shop : MonoBehaviour
 
     public void ClosePanel()
     {
+        AudioManager.Instance.PlayClickSound();
         _shopPanel.SetActive(false);
     }
 }

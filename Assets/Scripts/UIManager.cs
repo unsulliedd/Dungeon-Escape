@@ -98,12 +98,15 @@ public class UIManager : MonoBehaviour
     {
         _pauseMenuPanel.SetActive(true);
         Time.timeScale = 0;
+        AudioManager.Instance.TogglePause();
     }
 
     public void ResumeGame()
     {
         _pauseMenuPanel.SetActive(false);
+        AudioManager.Instance.PlayClickSound();
         Time.timeScale = 1;
+        AudioManager.Instance.TogglePause();
     }
 
     public void GameOver()

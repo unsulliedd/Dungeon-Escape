@@ -49,6 +49,10 @@ public class PendulumSawTrap : TrapDamage
             // If the conditions are met, set the angular velocity to the negative of the specified swing force.
             _rigidBody2D.angularVelocity = _swingForce * -1;
         }
+
+        // Play the trap sound if the angular velocity is greater than 50 or less than -50.
+        if (_rigidBody2D.angularVelocity > 50f || _rigidBody2D.angularVelocity < -50f)
+            AudioManager.Instance.PlayTrapSounds(0, transform);
     }
 }
 
