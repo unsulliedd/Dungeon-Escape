@@ -24,16 +24,24 @@ public abstract class Enemy : MonoBehaviour
     protected bool playerAlive;
     [SerializeField] protected GameObject _diamondPrefab;
 
-    public virtual void Init()
+    private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+            Debug.LogError("Animator is NULL");
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        if (player == null)
+            Debug.LogError("Player is NULL");
+    }
+
+    public virtual void Init()
+    {
+        currentTarget = waypoint1.position;
     }
 
     private void Start()
     {
         Init();
-        currentTarget = waypoint1.position;
     }
 
     public virtual void Update()
@@ -59,7 +67,7 @@ public abstract class Enemy : MonoBehaviour
         Vector2 targetPlayerDestination = new(player.transform.position.x + gapBetweenPlayer, transform.position.y);
 
         if (distance > 6f || !playerAlive)
-        {            
+        {
             if (transform.position == waypoint1.position)
             {
                 if (!idleInitialState)
@@ -76,7 +84,11 @@ public abstract class Enemy : MonoBehaviour
             animator.SetBool("InCombat", false);
             transform.position = Vector2.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
         }
-        if (distance < 6f && playerAlive)
+
+        if (distance < 6f && playerAlive
+            // if player is in between waypoints
+            && transform.position.x >= waypoint1.position.x 
+            && transform.position.x <= waypoint2.position.x) 
         {
             if (distance < 3f)
             {
@@ -87,6 +99,7 @@ public abstract class Enemy : MonoBehaviour
                 animator.SetBool("InCombat", false);
             transform.position = Vector2.MoveTowards(transform.position, targetPlayerDestination, speed * Time.deltaTime);
         }
+
         Debug.DrawLine(transform.position, currentTarget, Color.green);
     }
 
