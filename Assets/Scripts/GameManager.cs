@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +6,7 @@ public class GameManager : MonoBehaviour
     private static GameManager _instance;
     public static GameManager Instance => _instance;
     public bool HasKeyToCastle { get; set; }
+    public bool GameOver;
     private Player player;
 
     private void Awake()
@@ -20,6 +19,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         HasKeyToCastle = false;
+        GameOver = false;
     }
 
     private void Update()
@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerDeath()
     {
+        GameOver = true;
         UIManager.Instance.GameOver();
     }
 
