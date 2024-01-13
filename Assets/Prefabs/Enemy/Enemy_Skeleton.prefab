@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 2552388503931401665}
   m_Layer: 12
   m_Name: Enemy_Skeleton
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -300,6 +300,8 @@ MonoBehaviour:
   waypointStart: {fileID: 2278253886279008925}
   waypointEnd: {fileID: 3183411873703050121}
   isLookLeft: 0
+  minAttackDistancce: 3
+  minDistancetoPlayer: 6
   _diamondPrefab: {fileID: 1525653313389736926, guid: ca3b112826be5f14c958cb76149ce3cf, type: 3}
 --- !u!61 &2552388503931401665
 BoxCollider2D:

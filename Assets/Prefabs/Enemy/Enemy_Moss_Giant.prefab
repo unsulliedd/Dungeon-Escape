@@ -366,7 +366,7 @@ GameObject:
   - component: {fileID: 6093446585340785480}
   m_Layer: 12
   m_Name: Enemy_Moss_Giant
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -407,6 +407,8 @@ MonoBehaviour:
   waypointStart: {fileID: 8845541328454633437}
   waypointEnd: {fileID: 3414120724526166827}
   isLookLeft: 0
+  minAttackDistancce: 3
+  minDistancetoPlayer: 6
   _diamondPrefab: {fileID: 1525653313389736926, guid: ca3b112826be5f14c958cb76149ce3cf, type: 3}
 --- !u!61 &6093446585340785480
 BoxCollider2D:
