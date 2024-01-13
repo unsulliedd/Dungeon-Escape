@@ -4,7 +4,7 @@ public class PlayerAnimation : MonoBehaviour
 {
     private Animator _animator;
 
-    void Start()
+    void Awake()
     {
         if (!GetComponentInChildren<Animator>())
             Debug.Log("Player's Animator is null");

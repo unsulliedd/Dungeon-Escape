@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpiderAnimationEvent : MonoBehaviour
 {
     private Spider _spider;
 
-    void Start()
+    void Awake()
     {
         _spider = GetComponentInParent<Spider>();
     }
