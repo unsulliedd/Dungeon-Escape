@@ -29,16 +29,12 @@ public class Shop : MonoBehaviour
             UIManager.Instance.UpdatePlayerDiamondCount(_player.Diamonds);
 
             // Determine which items are owned and update the UI accordingly
-            if (_player.Health == 4)
-            {
-                UIManager.Instance.UpdateOwnedItem(0);
-                UIManager.Instance.UpdateOwnedItem(1);
-            }
-            else
-            {
-                UIManager.Instance.UpdateOwnedItem(3);
-                UIManager.Instance.UpdateOwnedItem(4);
-            }
+            UpdateShopUIOwnedItem();
+
+            // If no item is selected initially, choose a default item.
+            if (_currentSelectedItem == 0)
+                // First item selected by default
+                SelectItem(0);
 
             // Activate the shop panel
             _shopPanel.SetActive(true);
@@ -54,14 +50,20 @@ public class Shop : MonoBehaviour
         switch (item)
         {
             case 0:
-                UIManager.Instance.UpdateShopSelection(60);
-                _currentSelectedItem = 0;
-                _currentItemelectedCost = 10;
+                if (_player.Health < 4)  // Check if player's health is less than the maximum
+                {
+                    UIManager.Instance.UpdateShopSelection(60); // Update the selection indicator position
+                    _currentSelectedItem = 0;       // Update the currently selected item
+                    _currentItemelectedCost = 10;   // Update the currently selected item's cost
+                }
                 break;
             case 1:
-                UIManager.Instance.UpdateShopSelection(-40);
-                _currentSelectedItem = 1;
-                _currentItemelectedCost = 30;
+                if (_player.Health < 4)
+                {
+                    UIManager.Instance.UpdateShopSelection(-40);
+                    _currentSelectedItem = 1;
+                    _currentItemelectedCost = 30;
+                }
                 break;
             case 2:
                 UIManager.Instance.UpdateShopSelection(-144);
@@ -73,6 +75,7 @@ public class Shop : MonoBehaviour
                 break;
         }
     }
+
 
     // Method to handle item purchase
     public void BuyItem()
@@ -88,34 +91,55 @@ public class Shop : MonoBehaviour
                     {
                         _player.Health++;
                         UIManager.Instance.UpdateHealth(_player.Health);
-                        UIManager.Instance.UpdateOwnedItem(3);
                     }
                     else
-                        UIManager.Instance.UpdateOwnedItem(0);
+                        _currentItemelectedCost = 0;    // Prevent the player from purchasing the item again
                     break;
                 case 1:
-                    // Set player's health to the maximum
+                    
                     if (_player.Health < 4)
                     {
-                        _player.Health = 4;
+                        _player.Health = 4; // Set player's health to the maximum
                         UIManager.Instance.UpdateHealth(_player.Health);
-                        UIManager.Instance.UpdateOwnedItem(1);
                     }
+                    else
+                        _currentItemelectedCost = 0;
                     break;
                 case 2:
                     // Enable the key to the castle in the game manager
-                    GameManager.Instance.HasKeyToCastle = true;
-                    UIManager.Instance.UpdateOwnedItem(2);
+                    if (!GameManager.Instance.HasKeyToCastle)
+                    {
+                        GameManager.Instance.HasKeyToCastle = true;
+                        UIManager.Instance.UpdateOwnedItem(2);
+                    }
+                    else
+                        _currentItemelectedCost = 0;
                     break;
                 default:
                     Debug.Log("Invalid Item");
                     break;
             }
 
-            // Deduct the cost from player's diamonds and update UI
-            AudioManager.Instance.PlayClickSound();
-            _player.Diamonds -= _currentItemelectedCost;
-            UIManager.Instance.UpdatePlayerDiamondCount(_player.Diamonds);
+            _player.Diamonds -= _currentItemelectedCost;  // Deduct the cost from player's diamonds
+            AudioManager.Instance.PlayClickSound();  // Deduct the cost from player's diamonds and update UI
+            UIManager.Instance.UpdatePlayerDiamondCount(_player.Diamonds);  // Update UI with player's diamond count
+
+            UpdateShopUIOwnedItem();
+        }
+    }
+
+    // Update the UI interactability based on the player's health
+    private void UpdateShopUIOwnedItem()
+    {
+        if (_player.Health == 4)
+        {
+            UIManager.Instance.UpdateOwnedItem(0);  // Interactable = false
+            UIManager.Instance.UpdateOwnedItem(1);  // Interactable = false
+        }
+        else
+        {
+            UIManager.Instance.UpdateOwnedItem(3);  // Interactable = true
+            UIManager.Instance.UpdateOwnedItem(4);  // Interactable = true
         }
     }
 
