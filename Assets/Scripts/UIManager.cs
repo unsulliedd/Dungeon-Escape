@@ -10,21 +10,26 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _HUDDiamondCount;      // Reference to the HUD diamond count text
     [SerializeField] private Image[] _healthBars;                   // Array of health bar images representing player health
     [SerializeField] private TextMeshProUGUI _timeText;             // Reference to the HUD time display text
-    private float time;                                             // Variable to track elapsed game time
+    public float time;                                              // Variable to track elapsed game time
 
     [Header("Shop UI")]
     [SerializeField] private TextMeshProUGUI _playerDiamondCount;   // Reference to the player's diamond count in the shop UI
     [SerializeField] private Image _selectionIMG;                   // Reference to the selection indicator image in the shop UI
-    [SerializeField] private Button item0btn;                       // Reference to the button for item 0 in the shop UI
-    [SerializeField] private Button item1btn;                       // Reference to the button for item 1 in the shop UI
-    [SerializeField] private Button item2btn;                       // Reference to the button for item 2 in the shop UI
+    [SerializeField] private Button _item0btn;                      // Reference to the button for item 0 in the shop UI
+    [SerializeField] private Button _item1btn;                      // Reference to the button for item 1 in the shop UI
+    [SerializeField] private Button _item2btn;                      // Reference to the button for item 2 in the shop UI
 
     [Header("Pause Menu")]
     [SerializeField] private GameObject _pauseMenuPanel;            // Reference to the pause menu UI GameObject
 
+    [Header("End Level")]
+    [SerializeField] private GameObject _endLevelPanel;             // Reference to the end level UI GameObject
+    [SerializeField] private TextMeshProUGUI _levelText;            // Reference to the level text in the end level UI
+    [SerializeField] private Image[] _stars;                        // Array of star images representing player performance
+    [SerializeField] private TextMeshProUGUI[] _starText;           // Array of text components for star ratings
+                           
     [Header("Game Over")]
     [SerializeField] private GameObject _gameOverPanel;             // Reference to the game over panel UI GameObject
-
 
     // Singleton pattern
     private static UIManager _instance;
@@ -40,6 +45,11 @@ public class UIManager : MonoBehaviour
         // Activate touch controls if the device supports touch input
         if (IsTouchDevice())
             _touchControls.SetActive(true);
+
+        // Deactivate all UI panels when the game starts
+        _pauseMenuPanel.SetActive(false);
+        _endLevelPanel.SetActive(false);
+        _gameOverPanel.SetActive(false);
     }
 
     void Update()
@@ -92,19 +102,19 @@ public class UIManager : MonoBehaviour
         switch (item)
         {
             case 0:
-                item0btn.interactable = false;
+                _item0btn.interactable = false;
                 break;
             case 1:
-                item1btn.interactable = false;
+                _item1btn.interactable = false;
                 break;
             case 2:
-                item2btn.interactable = false;
+                _item2btn.interactable = false;
                 break;
             case 3:
-                item0btn.interactable = true;
+                _item0btn.interactable = true;
                 break;
             case 4:
-                item1btn.interactable = true;
+                _item1btn.interactable = true;
                 break;
             default:
                 Debug.Log("Invalid Item");
@@ -136,6 +146,52 @@ public class UIManager : MonoBehaviour
                 // Disable the health bar at index i, indicating that the player has lost health beyond this point.
                 _healthBars[i].enabled = false;
         }
+    }
+
+    // Update the displayed star ratings text in the UI
+    public void UpdateStarText()
+    {
+        // Update the text component for each star rating with the appropriate text.
+        _starText[0].text = (GameManager.Instance.collectedDiamondCount).ToString() + "/" + (GameManager.Instance.diamondCount).ToString() + " Diamond";
+        _starText[1].text = (GameManager.Instance.enemiesKilled).ToString() + "/" + (GameManager.Instance.enemyCount).ToString() + " Enemies Killed";
+        _starText[2].text = _timeText.text + "/" + "05:00 Finish Time";
+    }
+
+    // Update the displayed star ratings in the UI
+    public void Stars(int index)
+    { 
+        if (index >= 0 && index < _stars.Length)
+        {
+            switch (index)
+            {
+                case 0:
+                    if (_stars[0] != null)
+                        _stars[0].color = new Color32(255, 255, 225, 255);
+                    break;
+                case 1:
+                    if (_stars[1] != null)
+                        _stars[1].color = new Color32(255, 255, 225, 255);
+                    break;
+                case 2:
+                    if (_stars[2] != null)
+                        _stars[2].color = new Color32(255, 255, 225, 255);
+                    break;
+                default:
+                    Debug.Log("Invalid Index");
+                    break;
+            }
+        }
+        else
+        {
+            Debug.Log("Invalid Index");
+        }
+    }
+
+    // Show the end level panel
+    public void ShowEndLevel()
+    {
+        _levelText.text = "Level " + "0" +GameManager.Instance.currentLevel;
+        _endLevelPanel.SetActive(true);
     }
 
     // Pause the game and show the pause menu
