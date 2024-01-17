@@ -242,6 +242,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         return Physics2D.OverlapCircle(_groundCheck.transform.position, _groundCheckLength, _spikeLayerMask);
     }
+
     public void InstantDeath()
     {
         Health = 0;
@@ -265,6 +266,7 @@ public class Player : MonoBehaviour, IDamageable
     public void AddDiamonds(int amount)
     {
         Diamonds += amount;
+        GameManager.Instance.collectedDiamondCount++;
         AudioManager.Instance.PlayPlayerSounds(5);
         UIManager.Instance.UpdatePlayerDiamondCount(Diamonds);
     }
