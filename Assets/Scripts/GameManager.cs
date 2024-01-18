@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     private string[,] prevStarTextStatus;               // Property to track the star text for the current level
     private int[] prevStarStatus;                       // Property to track the star image status for the current level
 
+    // PlayerPrefs keys
+    private const string LastPlayedLevelKey = "LastPlayedLevel";
+
     // References
     private Player player;                              // Reference to the player
 
@@ -42,6 +45,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        SaveCurrentLevel(currentLevel);
         Time.timeScale = 1f;        // Set the time scale to 1 to ensure that the game is running at normal speed
         HasKeyToCastle = false;     // Set the key to the castle to false in the beginning of the level
         GameOver = false;           // Set the game over flag to false in the beginning of the level
@@ -58,6 +62,13 @@ public class GameManager : MonoBehaviour
     {
         GameOver = true; // Set the game over flag to true
         UIManager.Instance.GameOver(); // Display the game over screen
+        SaveCurrentLevel(currentLevel);
+    }
+
+    public void SaveCurrentLevel(int currentLevel)
+    {
+        PlayerPrefs.SetInt(LastPlayedLevelKey, currentLevel);
+        PlayerPrefs.Save();
     }
 
     // Restart the current level (button)

@@ -9,6 +9,7 @@ public class EndLevel : MonoBehaviour
             Time.timeScale = 0f;
             UIManager.Instance.ShowEndLevel();
             GameManager.Instance.GiveStar();
+            GameManager.Instance.SaveCurrentLevel(GameManager.Instance.currentLevel + 1);
             UIManager.Instance.UpdateStarText();
         }
     }
