@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    [Header("Start Button")]
+    [SerializeField] private TextMeshProUGUI _startButtonText;  // Reference to the start button
+
     [Header("Panels")]
     [SerializeField] private GameObject _mainMenuPanel;         // Reference to the main menu panel
     [SerializeField] private GameObject _optionsMenuPanel;      // Reference to the options menu panel
@@ -25,15 +28,29 @@ public class MainMenu : MonoBehaviour
     private GameObject currentPanel;                            // Reference to the current panel
     private AudioSource audioSource;                            // Reference to the AudioSource
 
+    // Player Prefs
+    private int lastPlayedLevel;
+    private const string LastPlayedLevelKey = "LastPlayedLevel";
+
     private void Awake()
     {
         // Check if AudioSource is attached to the GameObject
         if (!TryGetComponent(out audioSource))
             Debug.Log("Audio Source is null");
+
+        // Check if the player has played the game before
+        if (PlayerPrefs.HasKey(LastPlayedLevelKey))
+            lastPlayedLevel = PlayerPrefs.GetInt(LastPlayedLevelKey);
     }
 
     private void Start()
     {
+        // Change the start button text based on the last played level
+        if (lastPlayedLevel == 1)
+            _startButtonText.text = "Start";
+        else
+            _startButtonText.text = "Continue";
+
         ShowPanel(_mainMenuPanel);      // Initialize UI panels
         ShowStarImgStatusForLevels();   // Initialize star image status for levels
         ShowStarStatusForLevels();      // Initialize star text status for levels
@@ -55,7 +72,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         ClickSound();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(lastPlayedLevel != 0 ? lastPlayedLevel : 1);
     }
 
     // Method to open the options menu (button)
