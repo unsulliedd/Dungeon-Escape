@@ -15,10 +15,11 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject _statsPanel;            // Reference to the stats panel
     [SerializeField] private GameObject _settingsPanel;         // Reference to the settings panel
     [SerializeField] private GameObject _creditsPanel;          // Reference to the credits panel
+    [SerializeField] private GameObject _adjustControlsPanel;   // Reference to the adjust controls panel
 
     [Header("Audio")]
     [SerializeField] private AudioClip clickSound;              // Reference to the click sound
-    [SerializeField] private AudioSource _mainMenuMusic;        // Reference to the main menu music
+    public AudioSource _mainMenuMusic;        // Reference to the main menu music
 
     [Header("Levels")]
     [SerializeField] private GameObject[] _level;               // Reference to the level GameObjects
@@ -30,7 +31,6 @@ public class MainMenu : MonoBehaviour
 
     // Player Prefs
     private int lastPlayedLevel;
-    private const string LastPlayedLevelKey = "LastPlayedLevel";
 
     private void Awake()
     {
@@ -39,8 +39,7 @@ public class MainMenu : MonoBehaviour
             Debug.Log("Audio Source is null");
 
         // Check if the player has played the game before
-        if (PlayerPrefs.HasKey(LastPlayedLevelKey))
-            lastPlayedLevel = PlayerPrefs.GetInt(LastPlayedLevelKey);
+        lastPlayedLevel = PlayerPrefs.GetInt("LastPlayedLevel",1);
     }
 
     private void Start()
@@ -72,7 +71,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         ClickSound();
-        SceneManager.LoadScene(lastPlayedLevel != 0 ? lastPlayedLevel : 1);
+        SceneManager.LoadScene(lastPlayedLevel);
     }
 
     // Method to open the options menu (button)
@@ -201,6 +200,13 @@ public class MainMenu : MonoBehaviour
         _settingsPanel.SetActive(true);
     }
 
+    public void OpenAdjustControls()
+    {
+        ClickSound();
+        _settingsPanel.SetActive(false);
+        _adjustControlsPanel.SetActive(true);
+    }
+
     // Method to open the stats menu (button)
     public void OpenStats()
     {
@@ -248,6 +254,11 @@ public class MainMenu : MonoBehaviour
             currentPanel = _creditsPanel;
             ShowPanel(_optionsMenuPanel);
         }
+        else if(_adjustControlsPanel.activeSelf)
+        {
+            currentPanel = _adjustControlsPanel;
+            ShowPanel(_settingsPanel);
+        }
     }
 
     // Method to quit the game (button)
@@ -258,7 +269,7 @@ public class MainMenu : MonoBehaviour
     }
 
     // Method to play a click sound
-    private void ClickSound()
+    public void ClickSound()
     {
         audioSource.PlayOneShot(clickSound);
     }

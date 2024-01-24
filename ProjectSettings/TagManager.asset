@@ -7,6 +7,9 @@ TagManager:
   - Trap
   - Diamond
   - Enemy
+  - DefaultLocationButton
+  - SaveControlsLocation
+  - Stick
   layers:
   - Default
   - TransparentFX

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,11 +25,9 @@ public class GameManager : MonoBehaviour
     private string[,] prevStarTextStatus;               // Property to track the star text for the current level
     private int[] prevStarStatus;                       // Property to track the star image status for the current level
 
-    // PlayerPrefs keys
-    private const string LastPlayedLevelKey = "LastPlayedLevel";
-
     // References
-    private Player player;                              // Reference to the player
+    private Player player;                                              // Reference to the player
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;    // Reference to the camera
 
     void Awake()
     {
@@ -49,6 +48,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;        // Set the time scale to 1 to ensure that the game is running at normal speed
         HasKeyToCastle = false;     // Set the key to the castle to false in the beginning of the level
         GameOver = false;           // Set the game over flag to false in the beginning of the level
+        virtualCamera.m_Lens.FieldOfView = PlayerPrefs.GetFloat("FOV", 55f); // Set the camera FOV to the saved value
     }
 
     void Update()
@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveCurrentLevel(int currentLevel)
     {
-        PlayerPrefs.SetInt(LastPlayedLevelKey, currentLevel);
+        PlayerPrefs.SetInt("LastPlayedLevel", currentLevel);
         PlayerPrefs.Save();
     }
 
@@ -204,4 +204,37 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(currentLevel + 1);
     }
+
+    // Method to change the camera FOV
+    public void ChangeFOV(float fov)
+    {
+        virtualCamera.m_Lens.FieldOfView = fov;
+    }
+
+    // Loads the saved positions of control objects from PlayerPrefs and updates their RectTransform positions.
+    public void LoadControlLocations(GameObject[] controlObjects)
+    {
+        // Iterate through each control object in the given array.
+        foreach (GameObject controlObject in controlObjects)
+        {
+            // Get the RectTransform component of the current control object.
+            RectTransform rectTransform = controlObject.GetComponent<RectTransform>();
+
+            // Generate unique PlayerPrefs keys based on the control object's name for X and Y positions.
+            string playerPrefsKeyX = $"DraggableUI_{controlObject.name}_PosX";
+            string playerPrefsKeyY = $"DraggableUI_{controlObject.name}_PosY";
+
+            // Check if PlayerPrefs has saved positions for the current control object.
+            if (PlayerPrefs.HasKey(playerPrefsKeyX) && PlayerPrefs.HasKey(playerPrefsKeyY))
+            {
+                // Retrieve the saved X and Y positions from PlayerPrefs.
+                float x = PlayerPrefs.GetFloat(playerPrefsKeyX);
+                float y = PlayerPrefs.GetFloat(playerPrefsKeyY);
+
+                // Update the RectTransform position of the control object with the saved positions.
+                rectTransform.position = new Vector2(x, y);
+            }
+        }
+    }
+
 }

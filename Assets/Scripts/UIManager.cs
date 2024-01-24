@@ -7,10 +7,13 @@ public class UIManager : MonoBehaviour
 {
     [Header("HUD")]
     [SerializeField] private GameObject _touchControls;             // Reference to the touch controls UI GameObject
+    [SerializeField] private GameObject[] controlObjects;           // Array of control objects
     [SerializeField] private TextMeshProUGUI _HUDDiamondCount;      // Reference to the HUD diamond count text
     [SerializeField] private Image[] _healthBars;                   // Array of health bar images representing player health
     [SerializeField] private TextMeshProUGUI _timeText;             // Reference to the HUD time display text
     public float time;                                              // Variable to track elapsed game time
+    [SerializeField] private GameObject _stickDraggable;            // Reference to the draggable stick
+    [SerializeField] private GameObject _stickPrefab;               // Reference to the stick prefab
 
     [Header("Shop UI")]
     [SerializeField] private TextMeshProUGUI _playerDiamondCount;   // Reference to the player's diamond count in the shop UI
@@ -19,11 +22,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button _item1btn;                      // Reference to the button for item 1 in the shop UI
     [SerializeField] private Button _item2btn;                      // Reference to the button for item 2 in the shop UI
 
-    [Header("Pause Menu")]
+    [Header("Panels")]
     [SerializeField] private GameObject _pauseMenuPanel;            // Reference to the pause menu UI GameObject
+    [SerializeField] private GameObject _settingsPanel;             // Reference to the settings UI GameObject
+    [SerializeField] private GameObject _endLevelPanel;             // Reference to the end level UI
+    [SerializeField] private GameObject _statsPanel;                // Reference to the stats UI
+    [SerializeField] private GameObject _adjustControlsPanel;       // Reference to the adjust controls UI
+    private GameObject currentPanel;                                // Reference to the current panel
 
     [Header("End Level")]
-    [SerializeField] private GameObject _endLevelPanel;             // Reference to the end level UI GameObject
     [SerializeField] private TextMeshProUGUI _levelText;            // Reference to the level text in the end level UI
     [SerializeField] private Image[] _stars;                        // Array of star images representing player performance
     [SerializeField] private TextMeshProUGUI[] _starText;           // Array of text components for star ratings
@@ -50,6 +57,7 @@ public class UIManager : MonoBehaviour
         _pauseMenuPanel.SetActive(false);
         _endLevelPanel.SetActive(false);
         _gameOverPanel.SetActive(false);
+        GameManager.Instance.LoadControlLocations(controlObjects);
     }
 
     void Update()
@@ -202,6 +210,65 @@ public class UIManager : MonoBehaviour
         AudioManager.Instance.TogglePause();
     }
 
+    // Show the settings panel (button)
+    public void ShowSettings()
+    {
+        _pauseMenuPanel.SetActive(false);
+        _settingsPanel.SetActive(true);
+        AudioManager.Instance.PlayClickSound();
+    }
+
+    // Show the Adjust Controls panel (button)
+    public void ShowAdjustControls()
+    {
+        _settingsPanel.SetActive(false);
+        _adjustControlsPanel.SetActive(true);
+        AudioManager.Instance.PlayClickSound();
+    }
+
+    private void ShowPanel(GameObject panelToShow)
+    {
+        // Switch between UI panels
+        if (currentPanel != null)
+            currentPanel.SetActive(false);  // Hide the current panel
+
+        panelToShow.SetActive(true);        // Show the panel to show
+        currentPanel = panelToShow;         // Set the current panel to the panel to show
+    }
+
+    // Update the control locations (Save Button in Adjust Controller Panel)
+    public void UpdateControlLocation()
+    {
+        // Load and set the control locations
+        GameManager.Instance.LoadControlLocations(controlObjects);
+
+        // Since the original position of the stick game object is captured during Start
+        // and is not dynamically updated, reset the stick by re-adding it
+        // with the updated position data whenever its position changes.
+        ResetStick(_stickDraggable.transform.localPosition);
+    }
+
+    // Back button functionality
+    public void BackButton()
+    {
+        AudioManager.Instance.PlayClickSound();
+        if (_statsPanel.activeSelf)
+        {
+            currentPanel = _statsPanel;
+            ShowPanel(_pauseMenuPanel);
+        }
+        else if (_settingsPanel.activeSelf)
+        {
+            currentPanel = _settingsPanel;
+            ShowPanel(_pauseMenuPanel);
+        }
+        else if (_adjustControlsPanel.activeSelf)
+        {
+            currentPanel = _adjustControlsPanel;
+            ShowPanel(_settingsPanel);
+        }
+    }
+
     // Resume the game from the pause menu
     public void ResumeGame()
     {
@@ -227,5 +294,28 @@ public class UIManager : MonoBehaviour
     bool IsTouchDevice()
     {
         return Input.touchSupported;
+    }
+
+    // Resets the stick at the specified position.
+    public void ResetStick(Vector2 position)
+    {
+        // Find the existing stick GameObject with the specified tag.
+        GameObject stick = GameObject.FindWithTag("Stick");
+
+        // Check if a stick GameObject is found.
+        if (stick)
+        {
+            // Destroy the existing stick GameObject.
+            Destroy(stick);
+
+            // Instantiate a new stick GameObject from the specified prefab at the given position with no rotation.
+            GameObject newStick = Instantiate(_stickPrefab, position, Quaternion.identity);
+
+            // Update the reference to the new stick in the controlObjects array.
+            controlObjects[0] = newStick;
+
+            // Set the new stick as a child of the _touchControls GameObject, preserving its local position and rotation.
+            newStick.transform.SetParent(_touchControls.transform, false);
+        }
     }
 }

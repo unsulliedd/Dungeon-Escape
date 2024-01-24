@@ -4,7 +4,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [SerializeField] private bool _playBGMusic;
+    public bool _playBGMusic;
     [SerializeField] private float _minDistance;
     [SerializeField] private AudioSource[] _playerAudioSource;
     [SerializeField] private AudioSource[] _enemyMossGiantAudioSource;
@@ -31,7 +31,7 @@ public class AudioManager : MonoBehaviour
     private void Update()
     {
         if (_playBGMusic && !_bgMusicAudioSource[_bgMusicIndex].isPlaying && !_isGamePaused)
-            PlayBGMusic(Random.Range(0, _bgMusicAudioSource.Length));      
+            PlayBGMusic(Random.Range(0, _bgMusicAudioSource.Length));
     }
 
     public void PlayPlayerSounds(int playerSoundIndex)
