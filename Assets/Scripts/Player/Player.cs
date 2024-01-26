@@ -30,7 +30,9 @@ public class Player : MonoBehaviour, IDamageable
 
     [Header("Attack Settings")]
     [SerializeField] private bool _groundAttack;
-    [SerializeField] private bool _blocking;
+    public bool _blocking;
+    public GameObject _attackFx;
+    public GameObject _blockFx;
 
     [Header("References")]
     private Rigidbody2D _rigidBody2D;
@@ -134,7 +136,7 @@ public class Player : MonoBehaviour, IDamageable
     }
     IEnumerator GroundAttackRoutine()
     {
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.75f);
         _groundAttack = false;
     }
 
